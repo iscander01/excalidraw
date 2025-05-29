@@ -48,8 +48,17 @@ jobs:
             BRANCH_NAME="main"
           fi
           
-          # Checkout the branch
-          git checkout $BRANCH_NAME
+          # Fetch all branches
+          git fetch origin
+          
+          # Check if branch exists
+          if git show-ref --verify --quiet refs/remotes/origin/$BRANCH_NAME; then
+            # Branch exists, checkout and update it
+            git checkout -b $BRANCH_NAME origin/$BRANCH_NAME
+          else
+            # Branch doesn't exist, create it from the tag
+            git checkout -b $BRANCH_NAME
+          fi
           
           # Configure git
           git config user.name github-actions
