@@ -2,7 +2,7 @@ name: Build and Push Docker Image
 
 on:
   push:
-    branches: [main]
+    branches: [master]
 
 jobs:
   build-and-push:
@@ -13,20 +13,20 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Log in to GitHub Container Registry
-        run: echo "$${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $${{ github.actor }} --password-stdin
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build Docker image
-        run: docker build -t ghcr.io/$${{ github.repository }}:latest .
+        run: docker build -t ghcr.io/${{ github.repository }}:latest .
 
       - name: Push Docker image
-        run: docker push ghcr.io/$${{ github.repository }}:latest
+        run: docker push ghcr.io/${{ github.repository }}:latest
 
       - name: Generate docker-compose.yaml
         run: |
           echo "version: '3'
 services:
   app:
-    image: ghcr.io/$${{ github.repository }}:latest
+    image: ghcr.io/${{ github.repository }}:latest
     ports:
       - '8080:80'" > docker-compose.yaml
 
