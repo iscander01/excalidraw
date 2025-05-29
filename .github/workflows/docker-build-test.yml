@@ -12,16 +12,20 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs/tags//}
+
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build Docker image
         id: build
-        run: docker build -t ghcr.io/${{ github.repository }}:${{ github.ref_name }} .
+        run: docker build -t ghcr.io/${{ github.repository }}:${{ steps.get_version.outputs.VERSION }} .
 
       - name: Push Docker image
         id: push
-        run: docker push ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+        run: docker push ghcr.io/${{ github.repository }}:latest
 
       - name: Generate docker-compose.yaml
         run: |
@@ -29,7 +33,7 @@ jobs:
           version: '3'
           services:
             app:
-              image: ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+              image: ghcr.io/${{ github.repository }}:latest
               ports:
                 - '8080:80'
           EOL
@@ -48,12 +52,12 @@ jobs:
 
       - name: Output Image URL
         run: |
-          echo "IMAGE_URL=ghcr.io/${{ github.repository }}:${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          echo "IMAGE_URL=ghcr.io/${{ github.repository }}:latest" >> $GITHUB_OUTPUT
           echo "WORKFLOW_ID=${{ github.run_id }}" >> $GITHUB_OUTPUT
 
       - name: Notify Workflow Status
         if: always()
         run: |
           echo "Workflow Status: ${{ job.status }}"
-          echo "Image URL: ghcr.io/${{ github.repository }}:${{ github.ref_name }}"
+          echo "Image URL: ghcr.io/${{ github.repository }}:latest"
           echo "Workflow ID: ${{ github.run_id }}"
