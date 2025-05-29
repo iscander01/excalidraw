@@ -17,11 +17,11 @@ jobs:
 
       - name: Build Docker image
         id: build
-        run: docker build -t ghcr.io/${{ github.repository }}:latest .
+        run: docker build -t ghcr.io/${{ github.repository }}:${{ github.ref_name }} .
 
       - name: Push Docker image
         id: push
-        run: docker push ghcr.io/${{ github.repository }}:latest
+        run: docker push ghcr.io/${{ github.repository }}:${{ github.ref_name }}
 
       - name: Generate docker-compose.yaml
         run: |
@@ -29,7 +29,7 @@ jobs:
           version: '3'
           services:
             app:
-              image: ghcr.io/${{ github.repository }}:latest
+              image: ghcr.io/${{ github.repository }}:${{ github.ref_name }}
               ports:
                 - '8080:80'
           EOL
@@ -48,12 +48,12 @@ jobs:
 
       - name: Output Image URL
         run: |
-          echo "IMAGE_URL=ghcr.io/${{ github.repository }}:latest" >> $GITHUB_OUTPUT
+          echo "IMAGE_URL=ghcr.io/${{ github.repository }}:${{ github.ref_name }}" >> $GITHUB_OUTPUT
           echo "WORKFLOW_ID=${{ github.run_id }}" >> $GITHUB_OUTPUT
 
       - name: Notify Workflow Status
         if: always()
         run: |
           echo "Workflow Status: ${{ job.status }}"
-          echo "Image URL: ghcr.io/${{ github.repository }}:latest"
+          echo "Image URL: ghcr.io/${{ github.repository }}:${{ github.ref_name }}"
           echo "Workflow ID: ${{ github.run_id }}"
