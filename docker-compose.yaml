@@ -1,6 +1,6 @@
 version: '3'
 services:
   app:
-    image: ghcr.io/iscander01/excalidraw:v0.9.0
+    image: ghcr.io/iscander01/excalidraw:v1.0.1
     ports:
       - '8080:80'
