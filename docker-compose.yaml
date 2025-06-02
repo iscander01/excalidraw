@@ -1,9 +1,9 @@
-# Docker Image: ghcr.io/iscander01/excalidraw:eb52e80214cec92a5e3785b49a4710db24e6a04c03dad06cdb4ddb525bf500ed
-# Workflow URL: https://github.com/iscander01/excalidraw/actions/runs/15404257763
-# Commit Hash: 30d2d070efe6c00125e1e049a34f447e51fa2ecd
+# Docker Image: ghcr.io/iscander01/excalidraw:be12349c0a65f05210bdf5e9615d50100ad12d4939583efea9f53768001b66ff
+# Workflow URL: https://github.com/iscander01/excalidraw/actions/runs/15404427863
+# Commit Hash: 6ce19d5a624a09609f664f34bfd36a29445fef19
 version: '3'
 services:
   app:
-    image: ghcr.io/iscander01/excalidraw:eb52e80214cec92a5e3785b49a4710db24e6a04c03dad06cdb4ddb525bf500ed
+    image: ghcr.io/iscander01/excalidraw:be12349c0a65f05210bdf5e9615d50100ad12d4939583efea9f53768001b66ff
     ports:
       - '8080:80'
