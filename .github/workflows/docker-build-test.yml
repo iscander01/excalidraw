@@ -3,12 +3,6 @@ name: Build and Push Docker Image
 on:
   push:
     tags: "v[0-9]+.[0-9]+.[0-9]+"
-  workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Branch to update'
-        required: true
-        type: string
 
 jobs:
   build-and-push:
@@ -51,14 +45,11 @@ jobs:
           # Fetch all branches
           git fetch origin
           
-          # Use the branch passed from the add project modal
-          BRANCH_NAME="${{ github.event.inputs.branch || github.ref_name }}"
+          # Get the branch where the workflow file was committed
+          BRANCH_NAME="${{ github.event.repository.default_branch }}"
           
-          # Try to checkout the branch, create it if it doesn't exist
-          if ! git checkout $BRANCH_NAME 2>/dev/null; then
-            echo "Branch $BRANCH_NAME does not exist, creating it..."
-            git checkout -b $BRANCH_NAME
-          fi
+          # Checkout the branch
+          git checkout $BRANCH_NAME
           
           # Configure git
           git config user.name github-actions
