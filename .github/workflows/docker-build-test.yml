@@ -37,6 +37,9 @@ jobs:
       - name: Generate docker-compose.yaml
         run: |
           cat > docker-compose.yaml << EOL
+          # Docker Image: ghcr.io/${{ github.repository }}:${{ steps.build.outputs.IMAGE_HASH }}
+          # Workflow URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          # Commit Hash: ${{ github.sha }}
           version: '3'
           services:
             app:
