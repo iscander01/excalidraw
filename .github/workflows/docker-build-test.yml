@@ -25,7 +25,7 @@ jobs:
         id: build
         run: |
           docker build -t ghcr.io/${{ github.repository }}:latest .
-          IMAGE_HASH=$(docker images --no-trunc --quiet ghcr.io/${{ github.repository }}:latest)
+          IMAGE_HASH=$(docker images --no-trunc --quiet ghcr.io/${{ github.repository }}:latest | cut -d':' -f2)
           echo "IMAGE_HASH=${IMAGE_HASH}" >> $GITHUB_OUTPUT
 
       - name: Push Docker image
