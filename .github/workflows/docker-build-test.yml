@@ -38,7 +38,6 @@ jobs:
               image: ghcr.io/${{ github.repository }}:${{ steps.get_version.outputs.VERSION }}
               ports:
                 - '8080:80'
-                - '20:220'
           EOL
 
       - name: Commit docker-compose.yaml
