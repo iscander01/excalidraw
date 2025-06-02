@@ -23,7 +23,9 @@ jobs:
 
       - name: Build Docker image
         id: build
-        run: docker build -t ghcr.io/${{ github.repository }}:${{ steps.get_version.outputs.VERSION }} .
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}:${{ steps.get_version.outputs.VERSION }} .
+          echo "IMAGE_HASH=$(docker images --no-trunc --quiet ghcr.io/${{ github.repository }}:${{ steps.get_version.outputs.VERSION }})" >> $GITHUB_OUTPUT
 
       - name: Push Docker image
         id: push
@@ -35,7 +37,7 @@ jobs:
           version: '3'
           services:
             app:
-              image: ghcr.io/${{ github.repository }}:${{ steps.get_version.outputs.VERSION }}
+              image: ghcr.io/${{ github.repository }}@${{ steps.build.outputs.IMAGE_HASH }}
               ports:
                 - '8080:80'
           EOL
@@ -66,12 +68,12 @@ jobs:
 
       - name: Output Image URL
         run: |
-          echo "IMAGE_URL=ghcr.io/${{ github.repository }}:${{ steps.get_version.outputs.VERSION }}" >> $GITHUB_OUTPUT
+          echo "IMAGE_URL=ghcr.io/${{ github.repository }}@${{ steps.build.outputs.IMAGE_HASH }}" >> $GITHUB_OUTPUT
           echo "WORKFLOW_ID=${{ github.run_id }}" >> $GITHUB_OUTPUT
 
       - name: Notify Workflow Status
         if: always()
         run: |
           echo "Workflow Status: ${{ job.status }}"
-          echo "Image URL: ghcr.io/${{ github.repository }}:${{ steps.get_version.outputs.VERSION }}"
+          echo "Image URL: ghcr.io/${{ github.repository }}@${{ steps.build.outputs.IMAGE_HASH }}"
           echo "Workflow ID: ${{ github.run_id }}"
