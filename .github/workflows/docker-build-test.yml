@@ -24,12 +24,15 @@ jobs:
       - name: Build Docker image
         id: build
         run: |
-          docker build -t ghcr.io/${{ github.repository }}:${{ steps.get_version.outputs.VERSION }} .
-          echo "IMAGE_HASH=$(docker images --no-trunc --quiet ghcr.io/${{ github.repository }}:${{ steps.get_version.outputs.VERSION }})" >> $GITHUB_OUTPUT
+          docker build -t ghcr.io/${{ github.repository }}:latest .
+          IMAGE_HASH=$(docker images --no-trunc --quiet ghcr.io/${{ github.repository }}:latest)
+          echo "IMAGE_HASH=${IMAGE_HASH}" >> $GITHUB_OUTPUT
 
       - name: Push Docker image
         id: push
-        run: docker push ghcr.io/${{ github.repository }}:${{ steps.get_version.outputs.VERSION }}
+        run: |
+          docker tag ghcr.io/${{ github.repository }}:latest ghcr.io/${{ github.repository }}:${{ steps.build.outputs.IMAGE_HASH }}
+          docker push ghcr.io/${{ github.repository }}:${{ steps.build.outputs.IMAGE_HASH }}
 
       - name: Generate docker-compose.yaml
         run: |
@@ -37,7 +40,7 @@ jobs:
           version: '3'
           services:
             app:
-              image: ghcr.io/${{ github.repository }}@${{ steps.build.outputs.IMAGE_HASH }}
+              image: ghcr.io/${{ github.repository }}:${{ steps.build.outputs.IMAGE_HASH }}
               ports:
                 - '8080:80'
           EOL
@@ -68,12 +71,12 @@ jobs:
 
       - name: Output Image URL
         run: |
-          echo "IMAGE_URL=ghcr.io/${{ github.repository }}@${{ steps.build.outputs.IMAGE_HASH }}" >> $GITHUB_OUTPUT
+          echo "IMAGE_URL=ghcr.io/${{ github.repository }}:${{ steps.build.outputs.IMAGE_HASH }}" >> $GITHUB_OUTPUT
           echo "WORKFLOW_ID=${{ github.run_id }}" >> $GITHUB_OUTPUT
 
       - name: Notify Workflow Status
         if: always()
         run: |
           echo "Workflow Status: ${{ job.status }}"
-          echo "Image URL: ghcr.io/${{ github.repository }}@${{ steps.build.outputs.IMAGE_HASH }}"
+          echo "Image URL: ghcr.io/${{ github.repository }}:${{ steps.build.outputs.IMAGE_HASH }}"
           echo "Workflow ID: ${{ github.run_id }}"
