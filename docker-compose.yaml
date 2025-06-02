@@ -1,6 +1,6 @@
 version: '3'
 services:
   app:
-    image: ghcr.io/iscander01/excalidraw:v1.0.2
+    image: ghcr.io/iscander01/excalidraw@sha256:5b4e993abf945154671e70c3ba04dced45e7c156d50fd47ecf3d5103ad8b7fe2
     ports:
       - '8080:80'
